@@ -46,4 +46,44 @@ export ARM_TENANT_ID="your-tenant-id"
 
 export TF_VAR_GITHUB_TOKEN="your-github-token"
 export TF_VAR_GITHUB_OWNER="your-github-owner-name"
+```
+## Deployment Instructions 🚀
+Follow these steps to deploy the Azure infrastructure using Terraform:
 
+```
+## 1. Clone the Repository
+If this configuration is stored separately, clone it first:
+
+```bash
+git clone <your-repo-url>
+cd <your-repo-name>
+```
+## 2. Initialize Terraform
+Initialize the Terraform working directory:
+
+```bash
+terraform init
+```
+## 3. Select Workspace (Optional)
+To create and select a specific workspace (e.g., dev environment):
+
+```bash
+terraform workspace new dev
+terraform workspace select dev
+```
+## 4. Plan the Deployment
+Review the changes Terraform will make:
+
+```bash
+terraform plan
+```
+## 5. Apply the Deployment
+Apply the Terraform configuration to deploy the infrastructure:
+
+```bash
+terraform apply
+```
+## 6. Destroy Resources (when needed)
+To tear down and clean up all resources created by Terraform:
+```bash
+terraform destroy
