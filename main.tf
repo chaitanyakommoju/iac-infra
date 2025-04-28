@@ -99,7 +99,7 @@ module "vm" {
   resource_group_name  = module.rg.resource_group_name
   location             = var.location
   network_interface_id = module.nic.id
-  vm_size              = "Standard_DS1_v2"
+  vm_size              = "Standard_D2s_v3"
 
   storage_os_disk = {
     name              = "os-disk-${var.orgname}-${terraform.workspace}"

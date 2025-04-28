@@ -1,0 +1,45 @@
+orgname    = "<orgname>"
+environment = "environment"
+costcenter = "costcenter"
+region = "region"
+default_tags = {
+  "environment" = "environment"
+  "project"     = "project"
+}
+location       = "East US"
+tenant_id      = "tenant_id"
+address_space  = ["10.1.0.0/16"]
+
+subnets = [
+  {
+    name           = "subnet-dev1"
+    address_prefix = "10.1.1.0/24"
+  },
+  {
+    name           = "subnet-dev2"
+    address_prefix = "10.1.2.0/24"
+  }
+]
+admin_username = "admin_username"
+admin_password = "admin_password"
+
+storage_os_disk = {
+  caching           = "ReadWrite"
+  create_option     = "FromImage"
+  managed_disk_type = "Standard_LRS"
+  name          = "os-disk-nck-dev"
+  disk_size_gb  = 128
+  storage_type  = "Standard_LRS"
+}
+
+storage_image_reference = {
+  publisher = "Canonical"
+  offer     = "UbuntuServer"
+  sku       = "18.04-LTS"
+  version   = "latest"
+}
+
+os_profile = {
+  admin_username = "admin_username"
+  admin_password = "admin_password"
+}

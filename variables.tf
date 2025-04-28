@@ -67,13 +67,16 @@ variable "os_profile" {
     admin_password = string
   })
 }
-# variable "network_interface_id" {
-#   description = "The ID of the network interface"
-#   type        = string
+variable "admin_username" {
+  description = "admin username variable"
+  type        = string
+}
+# variable "admin_password" {
+#   description = "admin password variable"
 # }
-
-
-# variable "vnet_name" {
-#   description = "The name of the virtual network"
-#   type        = string
-# }
+variable "subnets" {
+  description = "subnets variable"
+}
+variable "address_space" {
+  description = "address_space variable"
+}
