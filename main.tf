@@ -17,7 +17,7 @@ module "rg" {
 }
 
 module "vnet" {
-  source = "git::https://github.com/chaitanyakommoju/iac-az-vnet-module.git"
+  source        = "git::https://github.com/chaitanyakommoju/iac-az-vnet-module.git"
   vnet_name     = "vnet-${var.orgname}-${terraform.workspace}"
   address_space = ["10.0.0.0/16"]
   subnets = [
@@ -30,8 +30,8 @@ module "vnet" {
       address_prefix = "10.0.2.0/24"
     }
   ]
-  orgname = var.orgname
-  region  = var.location
+  orgname             = var.orgname
+  region              = var.location
   environment         = var.environment
   location            = var.location
   resource_group_name = module.rg.resource_group_name
@@ -49,11 +49,11 @@ module "vnet" {
 }
 
 module "keyvault" {
-  source = "git::https://github.com/chaitanyakommoju/iac-az-keyvault-module.git"
-  keyvault_name = "kv-${var.orgname}-${terraform.workspace}"
-  orgname       = var.orgname
-  region        = var.location
-  tenant_id     = var.tenant_id
+  source              = "git::https://github.com/chaitanyakommoju/iac-az-keyvault-module.git"
+  keyvault_name       = "kv-${var.orgname}-${terraform.workspace}"
+  orgname             = var.orgname
+  region              = var.location
+  tenant_id           = var.tenant_id
   environment         = var.environment
   location            = var.location
   resource_group_name = module.rg.resource_group_name
@@ -78,8 +78,8 @@ module "blob_storage_account" {
   location             = var.location
   region               = var.location
   resource_group_name  = module.rg.resource_group_name
-  account_kind = "StorageV2"
-  account_tier = "Standard"
+  account_kind         = "StorageV2"
+  account_tier         = "Standard"
   tags = merge(
     var.default_tags,
     {
@@ -98,12 +98,12 @@ module "vm" {
   vm_name              = "vm-${var.orgname}-${terraform.workspace}"
   resource_group_name  = module.rg.resource_group_name
   location             = var.location
-  network_interface_id = module.nic.id  # Suppose you create NIC module or inline NIC
+  network_interface_id = module.nic.id
   vm_size              = "Standard_DS1_v2"
 
-  storage_os_disk          = var.storage_os_disk
-  storage_image_reference  = var.storage_image_reference
-  os_profile               = var.os_profile
+  storage_os_disk         = var.storage_os_disk
+  storage_image_reference = var.storage_image_reference
+  os_profile              = var.os_profile
 
   tags = merge(
     var.default_tags,
@@ -114,4 +114,32 @@ module "vm" {
       costcenter = var.costcenter
     }
   )
+
+  depends_on = [
+    module.rg,
+    module.vnet,
+    module.nic
+  ]
+
+}
+module "nic" {
+  source              = "git::https://github.com/chaitanyakommoju/iac-az-nic-module.git"
+  nic_name            = "nic-${var.orgname}-${terraform.workspace}"
+  location            = var.location
+  resource_group_name = module.rg.resource_group_name
+  subnet_id           = module.vnet.subnet_ids["subnet1"]
+  tags = merge(
+    var.default_tags,
+    {
+      org        = var.orgname
+      region     = var.location
+      env        = terraform.workspace
+      costcenter = var.costcenter
+    }
+  )
+
+  depends_on = [
+    module.vnet,
+    module.rg
+  ]
 }

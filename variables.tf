@@ -63,7 +63,7 @@ variable "os_profile" {
     admin_password = string
   })
 }
-
-variable "default_tags" {
-  type = map(string)
+variable "network_interface_id" {
+  description = "The ID of the network interface"
+  type        = string
 }
