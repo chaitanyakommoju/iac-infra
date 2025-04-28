@@ -41,7 +41,11 @@ variable "tenant_id" {
   type        = string
 }
 variable "storage_os_disk" {
+  description = "OS disk configuration"
   type = object({
+    name              = string
+    disk_size_gb      = number
+    storage_type      = string
     caching           = string
     create_option     = string
     managed_disk_type = string
@@ -63,7 +67,13 @@ variable "os_profile" {
     admin_password = string
   })
 }
-variable "network_interface_id" {
-  description = "The ID of the network interface"
-  type        = string
-}
+# variable "network_interface_id" {
+#   description = "The ID of the network interface"
+#   type        = string
+# }
+
+
+# variable "vnet_name" {
+#   description = "The name of the virtual network"
+#   type        = string
+# }

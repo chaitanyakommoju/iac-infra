@@ -101,7 +101,14 @@ module "vm" {
   network_interface_id = module.nic.id
   vm_size              = "Standard_DS1_v2"
 
-  storage_os_disk         = var.storage_os_disk
+  storage_os_disk = {
+    name              = "os-disk-${var.orgname}-${terraform.workspace}"
+    disk_size_gb      = 128
+    storage_type      = "Standard_LRS"
+    caching           = "ReadWrite"
+    create_option     = "FromImage"
+    managed_disk_type = "Standard_LRS"
+  }
   storage_image_reference = var.storage_image_reference
   os_profile              = var.os_profile
 
@@ -127,7 +134,7 @@ module "nic" {
   nic_name            = "nic-${var.orgname}-${terraform.workspace}"
   location            = var.location
   resource_group_name = module.rg.resource_group_name
-  subnet_id           = module.vnet.subnet_ids["subnet1"]
+  subnet_id           = module.vnet.subnet_ids[0]
   tags = merge(
     var.default_tags,
     {
