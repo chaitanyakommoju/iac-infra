@@ -71,12 +71,15 @@ variable "admin_username" {
   description = "admin username variable"
   type        = string
 }
-# variable "admin_password" {
-#   description = "admin password variable"
-# }
+variable "admin_password" {
+  description = "admin password variable"
+}
 variable "subnets" {
   description = "subnets variable"
 }
 variable "address_space" {
   description = "address_space variable"
+}
+variable "vm_size" {
+  description = "Type or Size of the VM"
 }
