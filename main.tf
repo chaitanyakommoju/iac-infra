@@ -1,54 +1,3 @@
-module "vnet" {
-  source              = "git::https://github.com/chaitanyakommoju/iac-az-vnet-module.git"
-  environment         = var.environment
-  location            = var.location
-  resource_group_name = module.rg.resource_group_name
-
-  tags = merge(
-    var.default_tags,
-    {
-      org       = var.orgname
-      region    = var.location
-      env       = terraform.workspace
-      costcenter = var.costcenter
-    }
-  )
-}
-
-module "blob" {
-  source              = "git::https://github.com/chaitanyakommoju/iac-az-blob-module.git"
-  environment         = var.environment
-  location            = var.location
-  resource_group_name = module.rg.resource_group_name
-
-  tags = merge(
-    var.default_tags,
-    {
-      org       = var.orgname
-      region    = var.location
-      env       = terraform.workspace
-      costcenter = var.costcenter
-    }
-  )
-}
-
-module "keyvault" {
-  source              = "git::https://github.com/chaitanyakommoju/iac-az-keyvault-module.git"
-  environment         = var.environment
-  location            = var.location
-  resource_group_name = module.rg.resource_group_name
-
-  tags = merge(
-    var.default_tags,
-    {
-      org       = var.orgname
-      region    = var.location
-      env       = terraform.workspace
-      costcenter = var.costcenter
-    }
-  )
-}
-
 module "rg" {
   source              = "git::https://github.com/chaitanyakommoju/iac-az-rg-module.git"
   resource_group_name = "rg-${var.orgname}-${terraform.workspace}"
@@ -56,18 +5,113 @@ module "rg" {
   orgname             = var.orgname
   environment         = terraform.workspace
   costcenter          = var.costcenter
-
   default_tags = merge(
     var.default_tags,
     {
-      org       = var.orgname
-      region    = var.location
-      env       = terraform.workspace
+      org        = var.orgname
+      region     = var.location
+      env        = terraform.workspace
       costcenter = var.costcenter
     }
   )
 }
 
-output "resource_group_name" {
-  value = module.rg.resource_group_name
+module "vnet" {
+  source = "git::https://github.com/chaitanyakommoju/iac-az-vnet-module.git"
+  vnet_name     = "vnet-${var.orgname}-${terraform.workspace}"
+  address_space = ["10.0.0.0/16"]
+  subnets = [
+    {
+      name           = "subnet1"
+      address_prefix = "10.0.1.0/24"
+    },
+    {
+      name           = "subnet2"
+      address_prefix = "10.0.2.0/24"
+    }
+  ]
+  orgname = var.orgname
+  region  = var.location
+  environment         = var.environment
+  location            = var.location
+  resource_group_name = module.rg.resource_group_name
+  tags = merge(
+    var.default_tags,
+    {
+      org        = var.orgname
+      region     = var.location
+      env        = terraform.workspace
+      costcenter = var.costcenter
+    }
+  )
+
+  depends_on = [module.rg]
+}
+
+module "keyvault" {
+  source = "git::https://github.com/chaitanyakommoju/iac-az-keyvault-module.git"
+  keyvault_name = "kv-${var.orgname}-${terraform.workspace}"
+  orgname       = var.orgname
+  region        = var.location
+  tenant_id     = var.tenant_id
+  environment         = var.environment
+  location            = var.location
+  resource_group_name = module.rg.resource_group_name
+  tags = merge(
+    var.default_tags,
+    {
+      org        = var.orgname
+      region     = var.location
+      env        = terraform.workspace
+      costcenter = var.costcenter
+    }
+  )
+
+  depends_on = [module.vnet]
+}
+
+module "blob_storage_account" {
+  source               = "git::https://github.com/chaitanyakommoju/iac-az-storage-module.git"
+  storage_account_name = "st${var.orgname}${terraform.workspace}"
+  orgname              = var.orgname
+  environment          = terraform.workspace
+  location             = var.location
+  region               = var.location
+  resource_group_name  = module.rg.resource_group_name
+  account_kind = "StorageV2"
+  account_tier = "Standard"
+  tags = merge(
+    var.default_tags,
+    {
+      org        = var.orgname
+      region     = var.location
+      env        = terraform.workspace
+      costcenter = var.costcenter
+    }
+  )
+
+  depends_on = [module.keyvault]
+}
+module "vm" {
+  source = "git::https://github.com/chaitanyakommoju/iac-az-vm-module.git"
+
+  vm_name              = "vm-${var.orgname}-${terraform.workspace}"
+  resource_group_name  = module.rg.resource_group_name
+  location             = var.location
+  network_interface_id = module.nic.id  # Suppose you create NIC module or inline NIC
+  vm_size              = "Standard_DS1_v2"
+
+  storage_os_disk          = var.storage_os_disk
+  storage_image_reference  = var.storage_image_reference
+  os_profile               = var.os_profile
+
+  tags = merge(
+    var.default_tags,
+    {
+      org        = var.orgname
+      region     = var.location
+      env        = terraform.workspace
+      costcenter = var.costcenter
+    }
+  )
 }
